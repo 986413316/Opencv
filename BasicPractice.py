@@ -408,12 +408,61 @@ cv2.destroyAllWindows()
 # plt.show()
 
 #均衡化操作
-img=cv2.imread("Images/Study.jpg",0)
-plt.hist(img.ravel(),256)
-plt.show()
+# img=cv2.imread("Images/Study.jpg",0)
+# plt.hist(img.ravel(),256)
+# plt.show()
+#
+# equ=cv2.equalizeHist(img)
+# plt.hist(equ.ravel(),256)
+# plt.show()
+#
+# res=np.hstack((img,equ))
+# Common.showPic(res)
+#
+# #把图像分成多个图像，各自均衡化
+# clahe=cv2.createCLAHE(clipLimit=2,tileGridSize=(8,8))#
+# res_clahe=clahe.apply(img)
+#endregion
 
-equ=cv2.equalizeHist(img)
-plt.hist(equ.ravel(),256)
-plt.show()
+#region 傅里叶变换
+# img=cv2.imread("Images/Study.jpg",0)
+# img_float32=np.float32(img)#傅里叶转换必须转换为float32格式
+#
+# dft=cv2.dft(img_float32,flags=cv2.DFT_COMPLEX_OUTPUT)#傅里叶变换,DFT_COMPLEX_OUTPUT表示输出是复数形式，包含实部和虚部，用于表示频率信息
+# dft_shift=np.fft.fftshift(dft)#傅里叶变换的结果默认低频在四角，高频在中心.fftshift 把低频移动到图像中心，更方便观察频谱结构
+# magnitude_spectrum=20*np.log(cv2.magnitude(dft_shift[:,:,0],dft_shift[:,:,1]))#计算频谱图：cv2.magnitude.中心亮表示低频成分多（图像结构平滑）边缘亮表示高频成分多（图像细节丰富）
+#
+# plt.subplot(121),plt.imshow(img,"gray")
+# plt.title("Input Image"), plt.xticks([]), plt.yticks([])
+# plt.subplot(122),plt.imshow(magnitude_spectrum,"gray")
+# plt.title("Magnitude Spectrum"), plt.xticks([]), plt.yticks([])
+# plt.show()
+#
+# #要低频的信息
+# img = cv2.imread('Images/Study.jpg', 0)
+# dft = cv2.dft(np.float32(img), flags=cv2.DFT_COMPLEX_OUTPUT)
+# dft_shift = np.fft.fftshift(dft)# 频谱中心化
+#
+#
+# rows, cols = img.shape# 获取图像中心位置
+# crow, ccol = int(rows / 2), int(cols / 2)
+# # 创建低通滤波掩码（中心区域为1，其余为0）  高频的话  np.ones(rows, cols, 2), np.uint8) 全是1
+# mask = np.zeros((rows, cols, 2), np.uint8)
+# mask[crow - 30:crow + 30, ccol - 30:ccol + 30] = 1
+#
+#
+# fshift = dft_shift * mask# 应用掩码进行频域滤波
+# f_ishift = np.fft.ifftshift(fshift)# 频谱反中心化
+# img_back = cv2.idft(f_ishift)# 逆傅里叶变换（IDFT）
+# # 计算恢复图像的模长
+# img_back = cv2.magnitude(img_back[:, :, 0], img_back[:, :, 1])
+#
+# # 显示原图与恢复图
+# plt.subplot(121), plt.imshow(img, cmap='gray')
+# plt.title('Input Image'), plt.xticks([]), plt.yticks([])
+# plt.subplot(122), plt.imshow(img_back, cmap='gray')
+# plt.title('Image after LPF'), plt.xticks([]), plt.yticks([])
+# plt.show()
 
+#要高频信息  就是把掩码换一下
 #endregion
